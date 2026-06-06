@@ -10,7 +10,7 @@ export const ROLE_LABELS = {
   VENDOR: "Vendor",
 };
 
-export const VENDOR_CATEGORIES = [
+export const PROCUREMENT_CATEGORIES = [
   "Electronics",
   "Office Supplies",
   "Raw Materials",
@@ -21,17 +21,62 @@ export const VENDOR_CATEGORIES = [
   "Chemicals",
   "Machinery",
   "Consulting",
+  "General",
 ];
 
-export const RFQ_CATEGORIES = [
-  "Electronics",
-  "Office Supplies",
-  "Raw Materials",
-  "IT Services",
-  "Construction",
-  "Logistics",
-  "Packaging",
-  "General",
+export const VENDOR_CATEGORIES = PROCUREMENT_CATEGORIES;
+export const RFQ_CATEGORIES = PROCUREMENT_CATEGORIES;
+
+export const VENDOR_STATUS_OPTIONS = [
+  { value: "", label: "All Status" },
+  { value: "ACTIVE", label: "Active" },
+  { value: "INACTIVE", label: "Inactive" },
+  { value: "PENDING", label: "Pending" },
+];
+
+export const RFQ_STATUS_OPTIONS = [
+  { value: "", label: "All Status" },
+  { value: "OPEN", label: "Open" },
+  { value: "AWARDED", label: "Awarded" },
+  { value: "CLOSED", label: "Closed" },
+  { value: "DRAFT", label: "Draft" },
+];
+
+export const QUOTATION_STATUS_OPTIONS = [
+  { value: "", label: "All Status" },
+  { value: "SUBMITTED", label: "Submitted" },
+  { value: "SELECTED", label: "Selected" },
+  { value: "REJECTED", label: "Rejected" },
+];
+
+export const APPROVAL_STATUS_OPTIONS = [
+  { value: "", label: "All Status" },
+  { value: "PENDING", label: "Pending" },
+  { value: "APPROVED", label: "Approved" },
+  { value: "REJECTED", label: "Rejected" },
+];
+
+export const PO_STATUS_OPTIONS = [
+  { value: "", label: "All Status" },
+  { value: "GENERATED", label: "Generated" },
+  { value: "SENT", label: "Sent" },
+  { value: "COMPLETED", label: "Completed" },
+];
+
+export const INVOICE_STATUS_OPTIONS = [
+  { value: "", label: "All Status" },
+  { value: "GENERATED", label: "Generated" },
+  { value: "SENT", label: "Sent" },
+  { value: "PAID", label: "Paid" },
+];
+
+export const ACTIVITY_STATUS_OPTIONS = [
+  { value: "", label: "All Status" },
+  { value: "CREATED", label: "Created" },
+  { value: "APPROVED", label: "Approved" },
+  { value: "REJECTED", label: "Rejected" },
+  { value: "GENERATED", label: "Generated" },
+  { value: "SENT", label: "Sent" },
 ];
 
 export const NAV_ITEMS = [

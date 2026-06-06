@@ -127,4 +127,35 @@
   html {
     @apply font-sans;
   }
+
+  select,
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"] {
+    color-scheme: dark;
+  }
+
+  select {
+    background-color: #1a1a1a;
+    color: #ffffff;
+  }
+
+  select option {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    padding: 8px 12px;
+  }
+
+  select option:checked,
+  select option:hover,
+  select option:focus,
+  select option:active {
+    background-color: #22c55e;
+    color: #000000;
+  }
+
+  select option:disabled {
+    background-color: #1a1a1a;
+    color: #888888;
+  }
 }

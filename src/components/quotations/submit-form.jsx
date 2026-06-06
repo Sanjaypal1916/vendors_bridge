@@ -17,10 +17,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export function SubmitQuotationForm({ rfqs }) {
+export function SubmitQuotationForm({ rfqs, defaultRfqId }) {
   const router = useRouter();
   const [error, setError] = useState("");
-  const [selectedRfq, setSelectedRfq] = useState(rfqs[0]?.id || "");
+  const initialRfq =
+    defaultRfqId && rfqs.some((r) => r.id === defaultRfqId)
+      ? defaultRfqId
+      : rfqs[0]?.id || "";
+  const [selectedRfq, setSelectedRfq] = useState(initialRfq);
 
   const rfq = rfqs.find((r) => r.id === selectedRfq);
 

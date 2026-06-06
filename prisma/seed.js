@@ -82,7 +82,6 @@ async function main() {
     { companyName: "BuildRight Co", contactPerson: "Dan Build", email: "dan@buildright.com", phone: "+1-555-1005", gstNumber: "GST-005", category: "Construction", status: "ACTIVE" },
     { companyName: "FastFreight", contactPerson: "Eve Fast", email: "eve@fastfreight.com", phone: "+1-555-1006", gstNumber: "GST-006", category: "Logistics", status: "ACTIVE" },
     { companyName: "PackPro Solutions", contactPerson: "Frank Pack", email: "frank@packpro.com", phone: "+1-555-1007", gstNumber: "GST-007", category: "Packaging", status: "ACTIVE" },
-    { companyName: "ChemPure Industries", contactPerson: "Grace Chem", email: "grace@chempure.com", phone: "+1-555-1008", gstNumber: "GST-008", category: "Chemicals", status: "ACTIVE" },
     { companyName: "MachineMax", contactPerson: "Henry Machine", email: "henry@machinemax.com", phone: "+1-555-1009", gstNumber: "GST-009", category: "Machinery", status: "ACTIVE" },
     { companyName: "ConsultPro", contactPerson: "Ivy Consult", email: "ivy@consultpro.com", phone: "+1-555-1010", gstNumber: "GST-010", category: "Consulting", status: "ACTIVE" },
   ];

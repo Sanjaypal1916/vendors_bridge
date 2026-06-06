@@ -23,8 +23,8 @@ SESSION_SECRET="your-random-secret"
 SMTP_HOST="smtp.gmail.com"
 SMTP_PORT="587"
 SMTP_USER="your-email@gmail.com"
-SMTP_PASS="your-app-password"
-SMTP_FROM="VendorBridge <noreply@vendorbridge.com>"
+SMTP_PASS="your-gmail-app-password"
+SMTP_FROM="VendorBridge <your-email@gmail.com>"
 ```
 
 3. Run database migration and seed:
@@ -69,5 +69,5 @@ Password for all accounts: `password123`
 - Tailwind CSS + shadcn/ui
 - Prisma ORM + PostgreSQL
 - Server Actions
-- Recharts, jsPDF, Nodemailer
+- Recharts, jsPDF, Nodemailer (SMTP)
 - Cookie session auth (bcrypt)

@@ -18,6 +18,9 @@ export function ComparisonGrid({ quotations, rfq }) {
 
   const lowestPrice = Math.min(...quotations.map((q) => q.price));
   const fastestDelivery = Math.min(...quotations.map((q) => q.deliveryDays));
+  const selectionComplete =
+    rfq?.status === "AWARDED" || quotations.some((q) => q.status === "SELECTED");
+  const selectedQuotation = quotations.find((q) => q.status === "SELECTED");
 
   async function handleSelectWinner(quotationId) {
     const result = await selectWinnerAction(quotationId);
@@ -39,13 +42,21 @@ export function ComparisonGrid({ quotations, rfq }) {
           <div
             key={`vendor-${q.id}`}
             className={`rounded-lg border p-4 ${
-              q.price === lowestPrice
-                ? "border-emerald-500/50 bg-emerald-500/10"
-                : "border-border bg-card"
+              q.status === "SELECTED"
+                ? "border-emerald-500 bg-emerald-500/20"
+                : q.price === lowestPrice
+                  ? "border-emerald-500/50 bg-emerald-500/10"
+                  : "border-border bg-card"
             }`}
           >
             <p className="font-semibold">{q.vendor.companyName}</p>
-            {q.price === lowestPrice && (
+            {q.status === "SELECTED" && (
+              <Badge variant="success" className="mt-1">Winner</Badge>
+            )}
+            {q.status === "REJECTED" && (
+              <Badge variant="destructive" className="mt-1">Rejected</Badge>
+            )}
+            {q.status === "SUBMITTED" && q.price === lowestPrice && (
               <Badge variant="success" className="mt-1">Lowest Price</Badge>
             )}
           </div>
@@ -91,19 +102,46 @@ export function ComparisonGrid({ quotations, rfq }) {
           </div>
         ))}
 
-        <div />
-        {quotations.map((q) => (
-          <div key={`action-${q.id}`} className="p-2">
-            <Button
-              onClick={() => handleSelectWinner(q.id)}
-              className="w-full bg-emerald-500 text-black hover:bg-emerald-400"
-              disabled={q.status === "SELECTED"}
-            >
-              {q.status === "SELECTED" ? "Selected Winner" : "Select Winner"}
-            </Button>
-          </div>
-        ))}
+        {selectionComplete ? (
+          <>
+            <div className="font-medium text-muted-foreground">Result</div>
+            {quotations.map((q) => (
+              <div key={`result-${q.id}`} className="p-2">
+                {q.status === "SELECTED" ? (
+                  <div className="rounded-lg border border-emerald-500/50 bg-emerald-500/10 p-3 text-center">
+                    <p className="text-sm font-semibold text-emerald-400">Selected Winner</p>
+                  </div>
+                ) : q.status === "REJECTED" ? (
+                  <div className="rounded-lg border border-border bg-white/5 p-3 text-center">
+                    <p className="text-sm text-muted-foreground">Not Selected</p>
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            <div className="font-medium text-muted-foreground">Action</div>
+            {quotations.map((q) => (
+              <div key={`action-${q.id}`} className="p-2">
+                <Button
+                  onClick={() => handleSelectWinner(q.id)}
+                  className="w-full bg-emerald-500 text-black hover:bg-emerald-400"
+                >
+                  Select Winner
+                </Button>
+              </div>
+            ))}
+          </>
+        )}
       </div>
+
+      {selectionComplete && selectedQuotation && (
+        <p className="mt-4 text-sm text-muted-foreground">
+          Winner selected: <span className="text-emerald-400">{selectedQuotation.vendor.companyName}</span>.
+          Comparison is read-only. Proceed to Approvals to complete the workflow.
+        </p>
+      )}
     </div>
   );
 }

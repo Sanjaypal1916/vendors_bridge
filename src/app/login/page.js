@@ -18,6 +18,9 @@ export default function LoginPage() {
           <h2 className="mb-6 text-lg font-semibold text-foreground">Login</h2>
           <LoginForm />
           <p className="mt-6 text-center text-sm text-muted-foreground">
+            Vendors registered by admin can login directly with their email and password.
+          </p>
+          <p className="mt-2 text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link href="/register" className="text-emerald-400 hover:underline">
               Register

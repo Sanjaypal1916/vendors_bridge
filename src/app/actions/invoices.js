@@ -60,7 +60,7 @@ export async function emailInvoiceAction(invoiceId) {
   const doc = generateInvoicePDF(invoice, po, vendor, rfq);
   const pdfBuffer = Buffer.from(doc.output("arraybuffer"));
 
-  const result = await sendInvoiceEmail(vendor.email, invoice, po, pdfBuffer);
+  const result = await sendInvoiceEmail(vendor, invoice, po, pdfBuffer);
 
   if (result.success) {
     await prisma.invoice.update({

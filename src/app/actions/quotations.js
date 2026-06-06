@@ -50,6 +50,18 @@ export async function submitQuotationAction(formData) {
     return { error: "RFQ, price, and delivery days are required." };
   }
 
+  const assignment = await prisma.rFQVendor.findFirst({
+    where: { rfqId, vendorId: user.vendor.id },
+  });
+  if (!assignment) {
+    return { error: "This RFQ was not sent to you. Only assigned vendors can submit quotations." };
+  }
+
+  const rfq = await prisma.rFQ.findUnique({ where: { id: rfqId } });
+  if (!rfq || rfq.status !== "OPEN") {
+    return { error: "This RFQ is not open for quotations." };
+  }
+
   const existing = await prisma.quotation.findFirst({
     where: { rfqId, vendorId: user.vendor.id },
   });
@@ -96,6 +108,17 @@ export async function selectWinnerAction(quotationId) {
   });
 
   if (!quotation) return { error: "Quotation not found" };
+
+  if (quotation.rfq.status === "AWARDED") {
+    return { error: "A winner has already been selected for this RFQ." };
+  }
+
+  const existingWinner = await prisma.quotation.findFirst({
+    where: { rfqId: quotation.rfqId, status: "SELECTED" },
+  });
+  if (existingWinner) {
+    return { error: "A winner has already been selected for this RFQ." };
+  }
 
   await prisma.quotation.updateMany({
     where: { rfqId: quotation.rfqId },

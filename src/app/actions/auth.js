@@ -10,9 +10,10 @@ import {
   getCurrentUser,
 } from "@/lib/auth";
 import { logActivity } from "@/lib/activity";
+import { createVendorAccount } from "@/lib/vendor-account";
 
 export async function loginAction(formData) {
-  const email = formData.get("email")?.toString().trim();
+  const email = formData.get("email")?.toString().trim().toLowerCase();
   const password = formData.get("password")?.toString();
 
   if (!email || !password) {
@@ -31,9 +32,59 @@ export async function loginAction(formData) {
 }
 
 export async function registerAction(formData) {
+  const role = formData.get("role")?.toString();
+
+  if (role === "VENDOR") {
+    return registerVendorAction(formData);
+  }
+
+  return registerStaffAction(formData);
+}
+
+async function registerVendorAction(formData) {
+  const companyName = formData.get("companyName")?.toString().trim();
+  const contactPerson = formData.get("contactPerson")?.toString().trim();
+  const email = formData.get("email")?.toString().trim().toLowerCase();
+  const phone = formData.get("phone")?.toString().trim();
+  const gstNumber = formData.get("gstNumber")?.toString().trim() || null;
+  const category = formData.get("category")?.toString();
+  const password = formData.get("password")?.toString();
+  const country = formData.get("country")?.toString().trim() || null;
+  const additionalInfo = formData.get("additionalInfo")?.toString().trim() || null;
+
+  const result = await createVendorAccount({
+    companyName,
+    contactPerson,
+    email,
+    phone,
+    gstNumber,
+    category,
+    password,
+    country,
+    additionalInfo,
+    status: "PENDING",
+  });
+
+  if (result.error) return { error: result.error };
+
+  await createSession(result.user.id);
+  await logActivity(
+    "REGISTER",
+    `Vendor '${result.vendor.companyName}' self-registered`,
+    result.user.id
+  );
+  await logActivity(
+    "VENDOR_CREATED",
+    `Vendor '${result.vendor.companyName}' registered via self-signup`,
+    result.user.id
+  );
+  redirect("/dashboard");
+}
+
+async function registerStaffAction(formData) {
   const firstName = formData.get("firstName")?.toString().trim();
   const lastName = formData.get("lastName")?.toString().trim();
-  const email = formData.get("email")?.toString().trim();
+  const email = formData.get("email")?.toString().trim().toLowerCase();
   const phone = formData.get("phone")?.toString().trim();
   const role = formData.get("role")?.toString();
   const country = formData.get("country")?.toString().trim();
@@ -46,10 +97,10 @@ export async function registerAction(formData) {
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    return { error: "Email already registered." };
+    return { error: "Email already registered. Please login instead." };
   }
 
-  const validRoles = ["ADMIN", "PROCUREMENT_OFFICER", "VENDOR"];
+  const validRoles = ["ADMIN", "PROCUREMENT_OFFICER"];
   if (!validRoles.includes(role)) {
     return { error: "Invalid role selected." };
   }
@@ -68,20 +119,6 @@ export async function registerAction(formData) {
       additionalInfo: additionalInfo || null,
     },
   });
-
-  if (role === "VENDOR") {
-    await prisma.vendor.create({
-      data: {
-        companyName: `${firstName} ${lastName} Co.`,
-        contactPerson: name,
-        email,
-        phone: phone || "N/A",
-        category: "General",
-        status: "PENDING",
-        userId: user.id,
-      },
-    });
-  }
 
   await createSession(user.id);
   await logActivity("REGISTER", `New user '${name}' registered as ${role}`, user.id);
