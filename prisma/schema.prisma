@@ -1,0 +1,186 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  PROCUREMENT_OFFICER
+  VENDOR
+}
+
+enum VendorStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+enum RFQStatus {
+  DRAFT
+  OPEN
+  CLOSED
+  AWARDED
+}
+
+enum QuotationStatus {
+  SUBMITTED
+  SELECTED
+  REJECTED
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum POStatus {
+  GENERATED
+  SENT
+  COMPLETED
+}
+
+enum InvoiceStatus {
+  GENERATED
+  SENT
+  PAID
+}
+
+model User {
+  id             String   @id @default(cuid())
+  name           String
+  email          String   @unique
+  password       String
+  role           UserRole
+  phone          String?
+  country        String?
+  additionalInfo String?
+  createdAt      DateTime @default(now())
+
+  sessions     Session[]
+  rfqs         RFQ[]
+  approvals    Approval[]
+  activityLogs ActivityLog[]
+  vendor       Vendor?
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Vendor {
+  id            String       @id @default(cuid())
+  companyName   String
+  contactPerson String
+  email         String
+  phone         String
+  gstNumber     String?
+  category      String
+  status        VendorStatus @default(ACTIVE)
+  userId        String?      @unique
+  user          User?        @relation(fields: [userId], references: [id])
+  createdAt     DateTime     @default(now())
+
+  quotations Quotation[]
+  rfqVendors RFQVendor[]
+}
+
+model RFQ {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  category    String
+  quantity    Int
+  deadline    DateTime
+  status      RFQStatus @default(OPEN)
+  createdById String
+  createdBy   User      @relation(fields: [createdById], references: [id])
+  createdAt   DateTime  @default(now())
+
+  quotations Quotation[]
+  rfqVendors RFQVendor[]
+}
+
+model RFQVendor {
+  id       String @id @default(cuid())
+  rfqId    String
+  vendorId String
+  rfq      RFQ    @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  vendor   Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@unique([rfqId, vendorId])
+}
+
+model Quotation {
+  id           String          @id @default(cuid())
+  rfqId        String
+  vendorId     String
+  price        Float
+  deliveryDays Int
+  notes        String?
+  status       QuotationStatus @default(SUBMITTED)
+  createdAt    DateTime        @default(now())
+
+  rfq           RFQ            @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  vendor        Vendor         @relation(fields: [vendorId], references: [id])
+  approval      Approval?
+  purchaseOrder PurchaseOrder?
+}
+
+model Approval {
+  id           String         @id @default(cuid())
+  quotationId  String         @unique
+  status       ApprovalStatus @default(PENDING)
+  remarks      String?
+  approvedById String?
+  approvedBy   User?          @relation(fields: [approvedById], references: [id])
+  approvedAt   DateTime?
+  createdAt    DateTime       @default(now())
+
+  quotation Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+}
+
+model PurchaseOrder {
+  id          String   @id @default(cuid())
+  poNumber    String   @unique
+  quotationId String   @unique
+  subtotal    Float
+  tax         Float
+  total       Float
+  status      POStatus @default(GENERATED)
+  createdAt   DateTime @default(now())
+
+  quotation Quotation @relation(fields: [quotationId], references: [id])
+  invoice   Invoice?
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  poId          String        @unique
+  subtotal      Float
+  tax           Float
+  total         Float
+  status        InvoiceStatus @default(GENERATED)
+  createdAt     DateTime      @default(now())
+
+  purchaseOrder PurchaseOrder @relation(fields: [poId], references: [id])
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  action      String
+  description String
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+}

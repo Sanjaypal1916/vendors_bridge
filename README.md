@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# VendorBridge — Procurement & Vendor Management ERP
 
-## Getting Started
+Dark-themed procurement ERP built with Next.js, Prisma, PostgreSQL, and shadcn/ui.
 
-First, run the development server:
+## Prerequisites
+
+- Node.js 18+
+- PostgreSQL database
+
+## Setup
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Configure environment variables in `.env`:
+
+```
+DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/vendorbridge?schema=public"
+SESSION_SECRET="your-random-secret"
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT="587"
+SMTP_USER="your-email@gmail.com"
+SMTP_PASS="your-app-password"
+SMTP_FROM="VendorBridge <noreply@vendorbridge.com>"
+```
+
+3. Run database migration and seed:
+
+```bash
+npx prisma migrate dev
+npx prisma db seed
+```
+
+4. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Seed Login Credentials
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Password for all accounts: `password123`
 
-## Learn More
+| Email | Role |
+|-------|------|
+| admin@vendorbridge.com | Admin |
+| procurement@vendorbridge.com | Procurement Officer |
+| vendor1@vendorbridge.com | Vendor |
 
-To learn more about Next.js, take a look at the following resources:
+## Workflow
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Procurement Officer creates RFQ and assigns vendors
+2. Vendor submits quotation
+3. Procurement compares quotations side-by-side
+4. Select winning vendor → Approval workflow
+5. Approve quotation → PO & Invoice auto-generated
+6. Download PDF / Email invoice
+7. All actions logged in Activity
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Tech Stack
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js (App Router)
+- JavaScript
+- Tailwind CSS + shadcn/ui
+- Prisma ORM + PostgreSQL
+- Server Actions
+- Recharts, jsPDF, Nodemailer
+- Cookie session auth (bcrypt)
